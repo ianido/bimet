@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{814FE4EF-EE80-4E71-BF85-ADCC3D456DB6}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>bmDataExtract</RootNamespace>
+    <AssemblyName>bmde</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CommandLine, Version=2.3.0.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommandLineParser.2.3.0\lib\net40\CommandLine.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=4.5.3.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.3\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BimetOneReader.cs" />
+    <Compile Include="Catalogs\Organ.cs" />
+    <Compile Include="Catalogs\OrgansHerarchy.cs" />
+    <Compile Include="Catalogs\Strings.cs" />
+    <Compile Include="ExtractBimet.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="SampleDB\136.1" />
+    <None Include="SampleDB\136ATOT.1" />
+    <None Include="SampleDB\136BIA.1" />
+    <None Include="SampleDB\136CANA.1" />
+    <None Include="SampleDB\136DERE.1" />
+    <None Include="SampleDB\136EN1.1" />
+    <None Include="SampleDB\136EN10.1" />
+    <None Include="SampleDB\136EN11.1" />
+    <None Include="SampleDB\136EN12.1" />
+    <None Include="SampleDB\136EN2.1" />
+    <None Include="SampleDB\136EN3.1" />
+    <None Include="SampleDB\136EN4.1" />
+    <None Include="SampleDB\136EN5.1" />
+    <None Include="SampleDB\136EN6.1" />
+    <None Include="SampleDB\136EN7.1" />
+    <None Include="SampleDB\136EN8.1" />
+    <None Include="SampleDB\136EN9.1" />
+    <None Include="SampleDB\136ENER.1" />
+    <None Include="SampleDB\136GRA.1" />
+    <None Include="SampleDB\136ind.1" />
+    <None Include="SampleDB\136MAMI.1" />
+    <None Include="SampleDB\136MED.1" />
+    <None Include="SampleDB\136PROB.1" />
+    <None Include="SampleDB\136QUIE.1" />
+    <None Include="SampleDB\136SINDROM.1" />
+    <None Include="SampleDB\136TER.1" />
+    <None Include="SampleDB\136TOTA.1" />
+    <None Include="SampleDB\136VARI.1" />
+    <None Include="SampleDB\137.1" />
+    <None Include="SampleDB\137ATOT.1" />
+    <None Include="SampleDB\137BIA.1" />
+    <None Include="SampleDB\137CANA.1" />
+    <None Include="SampleDB\137DERE.1" />
+    <None Include="SampleDB\137EN1.1" />
+    <None Include="SampleDB\137EN10.1" />
+    <None Include="SampleDB\137EN11.1" />
+    <None Include="SampleDB\137EN12.1" />
+    <None Include="SampleDB\137EN2.1" />
+    <None Include="SampleDB\137EN3.1" />
+    <None Include="SampleDB\137EN4.1" />
+    <None Include="SampleDB\137EN5.1" />
+    <None Include="SampleDB\137EN6.1" />
+    <None Include="SampleDB\137EN7.1" />
+    <None Include="SampleDB\137EN8.1" />
+    <None Include="SampleDB\137EN9.1" />
+    <None Include="SampleDB\137ENER.1" />
+    <None Include="SampleDB\137GRA.1" />
+    <None Include="SampleDB\137ind.1" />
+    <None Include="SampleDB\137MAMI.1" />
+    <None Include="SampleDB\137MED.1" />
+    <None Include="SampleDB\137PROB.1" />
+    <None Include="SampleDB\137QUIE.1" />
+    <None Include="SampleDB\137TER.1" />
+    <None Include="SampleDB\137TOTA.1" />
+    <None Include="SampleDB\137VARI.1" />
+    <None Include="SampleDB\138.1" />
+    <None Include="SampleDB\138ATOT.1" />
+    <None Include="SampleDB\138BIA.1" />
+    <None Include="SampleDB\138CANA.1" />
+    <None Include="SampleDB\138DERE.1" />
+    <None Include="SampleDB\138EN1.1" />
+    <None Include="SampleDB\138EN10.1" />
+    <None Include="SampleDB\138EN11.1" />
+    <None Include="SampleDB\138EN12.1" />
+    <None Include="SampleDB\138EN2.1" />
+    <None Include="SampleDB\138EN3.1" />
+    <None Include="SampleDB\138EN4.1" />
+    <None Include="SampleDB\138EN5.1" />
+    <None Include="SampleDB\138EN6.1" />
+    <None Include="SampleDB\138EN7.1" />
+    <None Include="SampleDB\138EN8.1" />
+    <None Include="SampleDB\138EN9.1" />
+    <None Include="SampleDB\138ENER.1" />
+    <None Include="SampleDB\138GRA.1" />
+    <None Include="SampleDB\138ind.1" />
+    <None Include="SampleDB\138MAMI.1" />
+    <None Include="SampleDB\138MED.1" />
+    <None Include="SampleDB\138PROB.1" />
+    <None Include="SampleDB\138QUIE.1" />
+    <None Include="SampleDB\138TER.1" />
+    <None Include="SampleDB\138TOTA.1" />
+    <None Include="SampleDB\138VARI.1" />
+    <None Include="SampleDB\DB.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="SampleDB\P4.zip" />
+    <None Include="SampleDB\run.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
