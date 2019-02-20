@@ -9,6 +9,7 @@ namespace bmDataExtract.Catalogs
     {
         public int ID { get; set; }
         public string Name { get; set; }
+        public string ShortName { get; set; }
         public Meridian Mother { get; set; }
         public Meridian Master { get; set; }
         public decimal I_Bioene { get; set; }

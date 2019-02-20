@@ -41,18 +41,18 @@ namespace bmDataExtract.Catalogs
         {
             Meridians = new Dictionary<int, Meridian>();
 
-            Meridians.Add(1,  new Meridian() { ID=1, Name = "Intestino Grueso" });
-            Meridians.Add(2,  new Meridian() { ID=2, Name = "Triple Recalentador" });
-            Meridians.Add(3,  new Meridian() { ID=3, Name = "Intestino Delgado" });
-            Meridians.Add(4,  new Meridian() { ID=4, Name = "Pulmon" });
-            Meridians.Add(5,  new Meridian() { ID=5, Name = "Pericardio" });
-            Meridians.Add(6,  new Meridian() { ID=6, Name = "Corazon" });
-            Meridians.Add(7,  new Meridian() { ID=7, Name = "Rinon" });
-            Meridians.Add(8,  new Meridian() { ID=8, Name = "Bazo" });
-            Meridians.Add(9,  new Meridian() { ID=9, Name = "Higado" });
-            Meridians.Add(10, new Meridian() { ID=10,Name = "Vesicula Biliar" });
-            Meridians.Add(11, new Meridian() { ID=11,Name = "Vejiga" });
-            Meridians.Add(12, new Meridian() { ID=12,Name = "Estomago" });
+            Meridians.Add(1,  new Meridian() { ID=1, Name = "Intestino Grueso", ShortName ="IG" });
+            Meridians.Add(2,  new Meridian() { ID=2, Name = "Triple Recalentador", ShortName = "TR" });
+            Meridians.Add(3,  new Meridian() { ID=3, Name = "Intestino Delgado", ShortName = "ID" });
+            Meridians.Add(4,  new Meridian() { ID=4, Name = "Pulmon", ShortName = "P" });
+            Meridians.Add(5,  new Meridian() { ID=5, Name = "Pericardio", ShortName = "PC" });
+            Meridians.Add(6,  new Meridian() { ID=6, Name = "Corazon", ShortName = "C" });
+            Meridians.Add(7,  new Meridian() { ID=7, Name = "Rinon", ShortName = "R" });
+            Meridians.Add(8,  new Meridian() { ID=8, Name = "Bazo", ShortName = "B" });
+            Meridians.Add(9,  new Meridian() { ID=9, Name = "Higado", ShortName = "H" });
+            Meridians.Add(10, new Meridian() { ID=10,Name = "Vesicula Biliar", ShortName = "VB" });
+            Meridians.Add(11, new Meridian() { ID=11,Name = "Vejiga", ShortName = "V" });
+            Meridians.Add(12, new Meridian() { ID=12,Name = "Estomago", ShortName = "E" });
 
             #region Mother/Son relationship
             Meridians[1].Mother = Meridians[12];

@@ -13,6 +13,10 @@ namespace bmDataExtract
         public string Dir { get; private set; }
         public string DB { get; private set; }
         public string[] PatientsID { get; private set; }
+        private ILogger logger { get; set; }
+        public int HeadRow { get; set; }
+
+
 
         public enum CategoryColor
         {
@@ -75,10 +79,11 @@ namespace bmDataExtract
             return sum;
         }
 
-        public ExtractBimet(string directory, string db)
+        public ExtractBimet(string directory, string db, ILogger ilogger)
         {
             Dir = directory;
             DB = db;
+            logger = ilogger;
             string[] _tFiles = Directory.GetFiles(Dir, "*ATOT.1");
             List<string> fList = new List<string>();
             foreach (string f in _tFiles)
@@ -92,38 +97,40 @@ namespace bmDataExtract
 
         public void Start()
         {
-            Console.WriteLine("Start Processing: " + DB);
+            logger.Log("Start Processing: " + DB + "...", EventType.Info);
             using (ExcelPackage excel = new ExcelPackage(new FileInfo(DB)))
             {
                 var sheet = excel.Workbook.Worksheets[3];
                 // RSearch Code from Range H6:H..
                 int startRow = 6;
+                HeadRow = 5;
                 string patientCode = sheet.Cells["H" + startRow].Text;
 
                 while (!string.IsNullOrEmpty(patientCode))
                 {
                     try
                     {
-                        Console.Write("Processing Patient: "+ patientCode);
+                        logger.Log("Processing Patient: "+ patientCode, finishLine : false);
                         Step1(sheet, patientCode, startRow);
                         Step2(sheet, patientCode, startRow);
                         Step3(sheet, patientCode, startRow);
                         Step4(sheet, patientCode, startRow);
                         Step5(sheet, patientCode, startRow);
+                        logger.Log($" --> OK.", EventType.Success);
                     }
                     catch (FileNotFoundException)
                     {
-                        Console.WriteLine($"--> Not found.");
+                        logger.Log($" --> Not found.", EventType.Warning);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"--> Error:" + ex.Message);
+                        logger.Log($" --> Error:" + ex.Message, EventType.Error);
                     }
                     startRow++;
                     patientCode = sheet.Cells["H" + startRow].Text;
                 }
-
-                Console.WriteLine("Saving DB (Excel) changes...");
+                logger.Log("");
+                logger.Log("Saving DB (Excel) changes...", EventType.Info);
                 excel.SaveAs(new FileInfo(DB));
             }
         }
@@ -505,23 +512,83 @@ namespace bmDataExtract
 
         public void Step5(ExcelWorksheet sheet, string patientCode, int row)
         {
-            var sheetEnergy = sheet.Workbook.Worksheets["Energy"];
+            #region Load Dataset
             BimetOneReader bor = new BimetOneReader(Path.Combine(Dir, $"{patientCode}CANA.1"), BimetOneReader.FileFormat.NumeratedSessions);
             int lastSession = bor.Sessions[bor.Sessions.Length - 1];
+            foreach (var org in str.Meridians)
+            {
+                decimal accumR = 0, accumL = 0;
+                for (int session = 1; session <= lastSession; session++)
+                {
+                    accumR += Convert.ToDecimal(bor[session, org.Key - 1]);
+                    accumL += Convert.ToDecimal(bor[session, org.Key - 1 + 12]);
+                }
+
+                org.Value.RightPotential = accumR / lastSession;
+                org.Value.LeftPotential = accumL / lastSession;
+            }
+            #endregion
+
+            #region Populate Excel
+
+            var sheetEnergy = sheet.Workbook.Worksheets["Energy"];
+            if (sheetEnergy == null) sheetEnergy = sheet.Workbook.Worksheets.Add("Energy");
+
+
+            if (string.IsNullOrWhiteSpace(sheetEnergy.Cells[$"C{HeadRow}"].Value?.ToString()))
+            {
+                sheetEnergy.Cells[$"C{HeadRow}"].Value = "Codigo";
+                FormatHead(sheetEnergy.Cells[$"C{HeadRow}"]);
+            }
+            if (string.IsNullOrWhiteSpace(sheetEnergy.Cells[$"D{HeadRow}"].Value?.ToString()))
+            {
+                sheetEnergy.Cells[$"D{HeadRow}"].Value = "Nombre";
+                FormatHead(sheetEnergy.Cells[$"D{HeadRow}"]);
+            }
+
             sheetEnergy.Cells[$"C{row}"].Value = patientCode;
             sheetEnergy.Cells[$"D{row}"].Value = sheet.Cells[$"D{row}"].Value;
+            
+            
+
             int excelColumn = 5; // Starting in Column 5 (A,B,C,D,E)
             foreach (var org in str.Meridians)
             {
-                decimal accum = 0;
-                for(int session =1; session <= lastSession; session++)
-                    accum += Convert.ToDecimal(bor[session, org.Key - 1]) + Convert.ToDecimal(bor[session, org.Key - 1 + 12]);
+                if (string.IsNullOrWhiteSpace(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{HeadRow}"].Value?.ToString()))
+                {
+                    sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{HeadRow}"].Value = "R-" + org.Value.ShortName;
+                    FormatHead(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{HeadRow}"]);
+                }
 
-                org.Value.RightPotential = accum / (lastSession * 2);
+                if (string.IsNullOrWhiteSpace(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{HeadRow}"].Value?.ToString()))
+                {
+                    sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{HeadRow}"].Value = "L-" + org.Value.ShortName;
+                    FormatHead(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{HeadRow}"]);
+                }
+
+                if (string.IsNullOrWhiteSpace(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 26)}{HeadRow}"].Value?.ToString()))
+                {
+                    sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 26)}{HeadRow}"].Value = org.Value.ShortName;
+                    FormatHead(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 26)}{HeadRow}"]);
+                }
 
                 sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{row}"].Value = org.Value.RightPotential;
+                sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{row}"].Value = org.Value.LeftPotential;
+                sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 26)}{row}"].Formula = $"=({GetColNameFromIndex(excelColumn)}{row}+{GetColNameFromIndex(excelColumn + 13)}{row})/2";
+                
                 excelColumn++;
-            }          
+            }
+
+            #endregion
+        }
+
+        private void FormatHead(ExcelRange excelRange)
+        {
+            excelRange.Style.Font.Color.SetColor(1, 0, 0, 0);
+            excelRange.Style.Font.Bold = true;
+            excelRange.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            excelRange.Style.Fill.BackgroundColor.SetColor(1, 200, 200, 200);
+            excelRange.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;            
         }
     }
 }
