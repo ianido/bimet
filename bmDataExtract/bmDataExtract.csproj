@@ -51,9 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BimetOneReader.cs" />
-    <Compile Include="Catalogs\Organ.cs" />
-    <Compile Include="Catalogs\OrgansHerarchy.cs" />
-    <Compile Include="Catalogs\Strings.cs" />
+    <Compile Include="Catalogs\Meridian.cs" />
+    <Compile Include="Catalogs\MeridianHerarchy.cs" />
     <Compile Include="ExtractBimet.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -145,7 +144,6 @@
     <None Include="SampleDB\DB.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SampleDB\P4.zip" />
     <None Include="SampleDB\run.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

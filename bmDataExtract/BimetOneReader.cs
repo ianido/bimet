@@ -8,17 +8,23 @@ namespace bmDataExtract
 {
     public class BimetOneReader
     {
+        public enum FileFormat
+        {
+            NoSession,
+            NumeratedSessions,
+            UnnumeratedSessions
+        }
         public string FileName { get; private set; }
-        public bool haveSessions { get; private set; }
+        public FileFormat Format { get; private set; }
 
         private string _fileContent;
         private Dictionary<int, decimal[]> _fileContentValues = new Dictionary<int, decimal[]>();
 
 
-        public BimetOneReader(string fileName, bool havesessions)
+        public BimetOneReader(string fileName, FileFormat format)
         {
             FileName = fileName;
-            haveSessions = havesessions;
+            Format = format;
             ReadFile();
         }
 
@@ -33,7 +39,7 @@ namespace bmDataExtract
             _fileContent = File.ReadAllText(FileName);
             try
             {
-                if (haveSessions)
+                if (Format == FileFormat.NumeratedSessions)
                 {
                     // Sessions
                     var sessions = _fileContent.Replace(".#IND", "").Replace(".#INF", "").Replace("\r\n", "\0").Split('\0');
@@ -46,12 +52,26 @@ namespace bmDataExtract
                             _fileContentValues.Add(int.Parse(values[0]), values.Skip(1).Select(p => decimal.Parse(p, System.Globalization.NumberStyles.Float)).ToArray());
                         }
                     }
+                } else
+                if (Format == FileFormat.UnnumeratedSessions)
+                {
+                    // Sessions
+                    var sessions = _fileContent.Replace(".#IND", "").Replace(".#INF", "").Replace("\r\n", "\0").Split('\0');
+                    int sessionId = 1;
+                    foreach (var s in sessions)
+                    {
+                        if (!string.IsNullOrEmpty(s))
+                        {
+                            var values = s.Split(',');
+                            _fileContentValues.Add(sessionId, values.Select(p => decimal.Parse(p, System.Globalization.NumberStyles.Float)).ToArray());
+                            sessionId++;
+                        }
+                    }
                 }
                 else
                 {
-                    string[] values = _fileContent.Split(',');
-                    
-                        _fileContentValues.Add(0, values.Select(p => decimal.Parse(p, System.Globalization.NumberStyles.Float)).ToArray());
+                    string[] values = _fileContent.Split(',');                    
+                    _fileContentValues.Add(0, values.Select(p => decimal.Parse(p, System.Globalization.NumberStyles.Float)).ToArray());
                 }
             }
             catch (Exception ex)
@@ -66,7 +86,7 @@ namespace bmDataExtract
             get
             {
                 if (_fileContent == null) ReadFile();
-                if (!haveSessions) return new int[0];
+                if (Format == FileFormat.NoSession) return new int[0];
                 return _fileContentValues.Keys.ToArray();
             }
         }
