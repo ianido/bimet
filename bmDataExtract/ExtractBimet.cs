@@ -111,9 +111,9 @@ namespace bmDataExtract
                     try
                     {
                         logger.Log("Processing Patient: "+ patientCode, finishLine : false);
-                        Step1(sheet, patientCode, startRow);
                         Step2(sheet, patientCode, startRow);
                         Step3(sheet, patientCode, startRow);
+                        Step3a(sheet, patientCode, startRow);
                         Step4(sheet, patientCode, startRow);
                         Step5(sheet, patientCode, startRow);
                         logger.Log($" --> OK.", EventType.Success);
@@ -141,25 +141,37 @@ namespace bmDataExtract
         /// <param name="sheet"></param>
         /// <param name="patientCode"></param>
         /// <param name="row"></param>
-        public void Step1(ExcelWorksheet sheet, string patientCode, int row)
+        public void Step3a(ExcelWorksheet sheet, string patientCode, int row)
         {
+            str.Meridians[6].G_Total = str.IndGOf(str.Meridians[6]);
+            str.Meridians[3].G_Total = str.IndGOf(str.Meridians[3]);
+            str.Meridians[2].G_Total = str.IndGOf(str.Meridians[2]);
+            str.Meridians[5].G_Total = str.IndGOf(str.Meridians[5]);
+            str.Meridians[8].G_Total = str.IndGOf(str.Meridians[8]);
+            str.Meridians[12].G_Total = str.IndGOf(str.Meridians[12]);
+            str.Meridians[4].G_Total = str.IndGOf(str.Meridians[4]);
+            str.Meridians[1].G_Total = str.IndGOf(str.Meridians[1]);
+            str.Meridians[7].G_Total = str.IndGOf(str.Meridians[7]);
+            str.Meridians[11].G_Total = str.IndGOf(str.Meridians[11]);
+            str.Meridians[9].G_Total = str.IndGOf(str.Meridians[9]);
+            str.Meridians[10].G_Total = str.IndGOf(str.Meridians[10]);
 
-            BimetOneReader bor = new BimetOneReader(Path.Combine(Dir, $"{patientCode}ind.1"), BimetOneReader.FileFormat.NoSession);
+            var ol = str.Meridians.OrderByDescending(e => e.Value.G_Total).ToArray();
 
             // Set Organs Name
-            sheet.Cells[$"I{row}"].Value = str.Meridians[Convert.ToInt32(bor[0])];
-            sheet.Cells[$"L{row}"].Value = str.Meridians[Convert.ToInt32(bor[1])];
-            sheet.Cells[$"O{row}"].Value = str.Meridians[Convert.ToInt32(bor[2])];
+            sheet.Cells[$"I{row}"].Value = ol[0].Value.Name;
+            sheet.Cells[$"L{row}"].Value = ol[1].Value.Name;
+            sheet.Cells[$"O{row}"].Value = ol[2].Value.Name;
+
+            // Set Variab
+            sheet.Cells[$"K{row}"].Value = ol[0].Value.Variability;
+            sheet.Cells[$"N{row}"].Value = ol[1].Value.Variability;
+            sheet.Cells[$"Q{row}"].Value = ol[2].Value.Variability;
 
             // Set IND G
-            sheet.Cells[$"K{row}"].Value = Convert.ToDecimal(bor[8]);
-            sheet.Cells[$"N{row}"].Value = Convert.ToDecimal(bor[9]);
-            sheet.Cells[$"Q{row}"].Value = Convert.ToDecimal(bor[10]);
-
-            // Set IND G
-            sheet.Cells[$"J{row}"].Value = Convert.ToDecimal(bor[35]);
-            sheet.Cells[$"M{row}"].Value = Convert.ToDecimal(bor[36]);
-            sheet.Cells[$"P{row}"].Value = Convert.ToDecimal(bor[37]);
+            sheet.Cells[$"J{row}"].Value = ol[0].Value.G_Total;
+            sheet.Cells[$"M{row}"].Value = ol[1].Value.G_Total;
+            sheet.Cells[$"P{row}"].Value = ol[2].Value.G_Total;
 
         }
 
@@ -520,8 +532,8 @@ namespace bmDataExtract
                 decimal accumR = 0, accumL = 0;
                 for (int session = 1; session <= lastSession; session++)
                 {
-                    accumR += Convert.ToDecimal(bor[session, org.Key - 1]);
-                    accumL += Convert.ToDecimal(bor[session, org.Key - 1 + 12]);
+                    accumL += Convert.ToDecimal(bor[session, org.Key - 1]);
+                    accumR += Convert.ToDecimal(bor[session, org.Key - 1 + 12]);
                 }
 
                 org.Value.RightPotential = accumR / lastSession;
@@ -549,20 +561,18 @@ namespace bmDataExtract
             sheetEnergy.Cells[$"C{row}"].Value = patientCode;
             sheetEnergy.Cells[$"D{row}"].Value = sheet.Cells[$"D{row}"].Value;
             
-            
-
             int excelColumn = 5; // Starting in Column 5 (A,B,C,D,E)
             foreach (var org in str.Meridians)
             {
                 if (string.IsNullOrWhiteSpace(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{HeadRow}"].Value?.ToString()))
                 {
-                    sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{HeadRow}"].Value = "R-" + org.Value.ShortName;
+                    sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{HeadRow}"].Value = "I-" + org.Value.ShortName;
                     FormatHead(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{HeadRow}"]);
                 }
 
                 if (string.IsNullOrWhiteSpace(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{HeadRow}"].Value?.ToString()))
                 {
-                    sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{HeadRow}"].Value = "L-" + org.Value.ShortName;
+                    sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{HeadRow}"].Value = "R-" + org.Value.ShortName;
                     FormatHead(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{HeadRow}"]);
                 }
 
@@ -572,8 +582,8 @@ namespace bmDataExtract
                     FormatHead(sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 26)}{HeadRow}"]);
                 }
 
-                sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{row}"].Value = org.Value.RightPotential;
-                sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{row}"].Value = org.Value.LeftPotential;
+                sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn)}{row}"].Value = org.Value.LeftPotential;
+                sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 13)}{row}"].Value = org.Value.RightPotential;
                 sheetEnergy.Cells[$"{GetColNameFromIndex(excelColumn + 26)}{row}"].Formula = $"=({GetColNameFromIndex(excelColumn)}{row}+{GetColNameFromIndex(excelColumn + 13)}{row})/2";
                 
                 excelColumn++;

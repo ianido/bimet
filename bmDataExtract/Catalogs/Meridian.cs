@@ -17,6 +17,7 @@ namespace bmDataExtract.Catalogs
         public decimal RightPotential { get; set; }
         public decimal G_as_Master { get; set; }
         public decimal G_as_Mother { get; set; }
+        public decimal G_Total { get; set; }
         public decimal Variability { get; set; }
 
         public override string ToString()
